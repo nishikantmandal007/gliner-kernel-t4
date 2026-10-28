@@ -22,17 +22,18 @@ jobs:
     needs: test
     if: startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-24.04
-    container: nvidia/cuda:13.0.3-devel-ubuntu22.04
     permissions:
       contents: write
-    env:
-      TORCH_CUDA_ARCH_LIST: "7.5"
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - run: apt-get update && apt-get install -y --no-install-recommends python3.10-dev python3-pip
-      - run: pip install torch==2.14.1 ninja==1.13.2 pyahocorasick==2.3.1 setuptools==84.2.1 wheel==0.48.0
-      - run: python3 scripts/build_kernels.py
-      - run: pip wheel --no-deps --no-build-isolation -w dist .
+      - run: sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache/CodeQL
+      - run: |
+          docker run --rm -v "$PWD:/src" -w /src -e TORCH_CUDA_ARCH_LIST=7.5 nvidia/cuda:13.0.3-devel-ubuntu22.04 bash -ec "
+            apt-get update && apt-get install -y --no-install-recommends python3.10-dev python3-pip
+            pip install --no-cache-dir torch==2.14.1 ninja==1.13.2 pyahocorasick==2.3.1 setuptools==84.2.1 wheel==0.48.0
+            python3 scripts/build_kernels.py
+            pip wheel --no-deps --no-build-isolation -w dist .
+          "
       - uses: softprops/action-gh-release@efb35369e0ad2afab669f228072c1b0d510eae64 # v3.0.3
         with:
           files: dist/*.whl
