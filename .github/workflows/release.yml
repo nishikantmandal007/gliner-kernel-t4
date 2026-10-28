@@ -28,7 +28,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - run: sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache/CodeQL
       - run: |
-          docker run --rm -v "$PWD:/src" -w /src -e TORCH_CUDA_ARCH_LIST=7.5 nvidia/cuda:13.0.3-devel-ubuntu22.04 bash -ec "
+          docker run --rm -v "$PWD:/src" -w /src -e TORCH_CUDA_ARCH_LIST=7.5 -e PYTHONPATH=/src nvidia/cuda:13.0.3-devel-ubuntu22.04 bash -ec "
             apt-get update && apt-get install -y --no-install-recommends python3.10-dev python3-pip
             pip install --no-cache-dir torch==2.14.1 ninja==1.13.2 pyahocorasick==2.3.1 setuptools==84.2.1 wheel==0.48.0
             python3 scripts/build_kernels.py
