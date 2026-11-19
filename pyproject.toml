@@ -3,7 +3,7 @@ requires = ["setuptools>=68"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "gliner-kernel-t4"
+name = "glinert4"
 version = "1.0.0"
 description = "GLiNER2 entity detection on an NVIDIA T4: fused DeBERTa attention, an exact count head and a pipelined detector."
 readme = "README.md"
@@ -23,10 +23,10 @@ environments = ["python_full_version >= '3.11'"]
 
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["gliner_kernel_t4*"]
+include = ["glinert4*"]
 
 [tool.setuptools.package-data]
-gliner_kernel_t4 = ["csrc/*.cu", "csrc/*.cpp", "_gliner_kernel_t4.so"]
+glinert4 = ["csrc/*.cu", "csrc/*.cpp", "_glinert4.so"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

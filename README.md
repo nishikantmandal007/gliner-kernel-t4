@@ -1,4 +1,4 @@
-# gliner-kernel-t4
+# glinert4
 
 Fast GLiNER2 entity detection on an NVIDIA T4. A fused DeBERTa attention kernel, an exact count head and a
 CPU/GPU pipeline run `fastino/gliner2-multi-v1` (`gliner2==2.1.0`) about twice as fast as stock gliner2 on a T4,
@@ -13,12 +13,12 @@ uv sync
 uv run python scripts/build_kernels.py
 ```
 
-`build_kernels.py` compiles the CUDA ops into `gliner_kernel_t4/_gliner_kernel_t4.so`. Build with the torch you
-deploy and an `nvcc` of the same CUDA major version (torch 2.14.1+cu130 needs CUDA 13.0). Without the prebuilt
+`build_kernels.py` compiles the CUDA ops into `glinert4/_glinert4.so`. Build with the torch you
+deploy and an `nvcc` of the same CUDA major version (torch 2.14.1+cu126 needs CUDA 12.6). Without the prebuilt
 library the ops compile on first use, which needs `nvcc` at runtime.
 
 For a Docker image without a compiler, build the library once in a throwaway container from the same image, with
-`cuda-nvcc-13-0`, the CUDA dev headers and `python3.10-dev` installed, then build a wheel that carries it:
+`cuda-nvcc-12-6`, the CUDA dev headers and `python3.10-dev` installed, then build a wheel that carries it:
 
 ```bash
 python scripts/build_kernels.py
@@ -28,7 +28,7 @@ pip wheel --no-deps -w dist .
 ## Usage
 
 ```python
-from gliner_kernel_t4 import Detector
+from glinert4 import Detector
 
 detector = Detector(device="cuda:0")
 found = detector.detect(["Anna Müller works at Siemens AG, Hauptstraße 5, Berlin."])
@@ -40,7 +40,7 @@ found[0]["occurrences"]  # [{'label': 'Person', 'start': 0, 'end': 11, 'score': 
 Texts can be any length. `labels=` restricts or reorders the labels for one call.
 
 ```python
-from gliner_kernel_t4 import Detector, DetectorConfig
+from glinert4 import Detector, DetectorConfig
 
 config = DetectorConfig(
     labels=("Person", "Organization", "Street", "City", "Insurance Number"),
@@ -54,7 +54,7 @@ detector = Detector(config, device="cuda:0")
 ```
 
 `Detector(..., fast=False)` runs plain gliner2 with the same settings, as a reference.
-`gliner_kernel_t4.install()` and `gliner_kernel_t4.uninstall()` apply or remove the kernels and patches process-wide.
+`glinert4.install()` and `glinert4.uninstall()` apply or remove the kernels and patches process-wide.
 
 ### Serving many requests
 
@@ -62,7 +62,7 @@ detector = Detector(config, device="cuda:0")
 as `detect`, split up:
 
 ```python
-from gliner_kernel_t4 import pipeline
+from glinert4 import pipeline
 
 windows = detector.windows(text)                       # a document cut into model windows
 job = detector.job([window.text for window in batch], labels)
@@ -82,7 +82,7 @@ distinct values:
 | Setup | Time | Words/s | Person R/P | Organization R/P | Street R/P | City R/P |
 |---|---:|---:|---|---|---|---|
 | stock gliner2, 3 label passes | 5.10 s | 7,441 | .994/.961 | .977/.846 | .861/1.000 | 1.000/.930 |
-| **gliner-kernel-t4** | **2.60 s** | **14,595** | **1.000/.997** | **1.000/.992** | **.871/1.000** | **1.000/.994** |
+| **glinert4** | **2.60 s** | **14,595** | **1.000/.997** | **1.000/.992** | **.871/1.000** | **1.000/.994** |
 
 Served behind one queue on two T4s with two workers per GPU, it reaches about 24,000 words/s, with short chat texts
 answered in under 2 s at p95 under full load.
@@ -117,7 +117,7 @@ and short forms are found in one Aho-Corasick pass over the text, about 7 ms per
 | `aliases` | "Lakshmi Varma" also finds "Ms. Varma" and "L. Varma"; "Kaveri Analytics Private Limited" finds "Kaveri Analytics" | only when the short form belongs to exactly one entity |
 
 ```python
-from gliner_kernel_t4 import Detector, DetectorConfig, MemoryConfig
+from glinert4 import Detector, DetectorConfig, MemoryConfig
 
 detector = Detector(DetectorConfig(memory=MemoryConfig()))
 ```
@@ -139,7 +139,7 @@ and unpadded batches of 96 to 1024 tokens.
 ## Structure
 
 ```text
-gliner_kernel_t4/
+glinert4/
   __init__.py       Detector, DetectorConfig, MemoryConfig, install, uninstall
   detector.py       single-pass detection and span post-processing
   pipeline.py       pipelined long-document extraction and the scheduler steps

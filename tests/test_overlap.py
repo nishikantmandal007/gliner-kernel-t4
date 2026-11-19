@@ -3,7 +3,7 @@ import random
 import pytest
 from gliner2.inference.overlap import resolve_overlaps as stock
 
-from gliner_kernel_t4.overlap import resolve_overlaps
+from glinert4.overlap import resolve_overlaps
 
 
 def spans(seed, count, as_dicts):

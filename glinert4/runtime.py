@@ -14,7 +14,7 @@ def check_gliner2():
     import gliner2
 
     if gliner2.__version__ != GLINER2_VERSION:
-        raise RuntimeError(f"gliner_kernel_t4 requires gliner2=={GLINER2_VERSION}, found {gliner2.__version__}")
+        raise RuntimeError(f"glinert4 requires gliner2=={GLINER2_VERSION}, found {gliner2.__version__}")
 
 
 def install_word_cache(size=WORD_CACHE_SIZE):

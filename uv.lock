@@ -363,7 +363,7 @@ wheels = [
 ]
 
 [[package]]
-name = "gliner-kernel-t4"
+name = "glinert4"
 version = "1.0.0"
 source = { editable = "." }
 dependencies = [

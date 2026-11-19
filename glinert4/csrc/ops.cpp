@@ -79,7 +79,7 @@ torch::Tensor disentangled_attention(torch::Tensor query, torch::Tensor key, tor
 
 }
 
-TORCH_LIBRARY(gliner_kernel_t4, ops) {
+TORCH_LIBRARY(glinert4, ops) {
   ops.def(
       "disentangled_attention(Tensor query, Tensor key, Tensor value, Tensor pos_key, Tensor pos_query, "
       "Tensor delta_to_local, int position_offset, Tensor? mask, float scale_log2, Tensor? lengths=None, "
