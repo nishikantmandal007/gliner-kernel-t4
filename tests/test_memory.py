@@ -1,7 +1,7 @@
 import pytest
 
-from gliner_kernel_t4 import Detector, DetectorConfig, runtime
-from gliner_kernel_t4.memory import MemoryConfig, name_like, refine
+from glinert4 import Detector, DetectorConfig, runtime
+from glinert4.memory import MemoryConfig, name_like, refine
 from standin import build, corpus
 
 TEXT = ("Between Kaveri Analytics Private Limited, represented by Lakshmi Varma, and Asterfield Research Ltd. "
@@ -118,7 +118,7 @@ def test_detector_without_memory_steps_matches_the_plain_detector():
 
 
 def test_matches_stay_inside_word_boundaries_in_indic_scripts():
-    from gliner_kernel_t4.memory import occurrences
+    from glinert4.memory import occurrences
 
     text = "राम ने रामायण पढ़ी, राम खुश था"
     assert [text[s:e] for s, e in occurrences(text, "राम")] == ["राम", "राम"]

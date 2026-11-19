@@ -5,7 +5,7 @@ pytestmark = pytest.mark.skipif(not torch.cuda.is_available(), reason="CUDA requ
 
 
 def test_add_layernorm_is_bit_identical():
-    from gliner_kernel_t4.ops import ops
+    from glinert4.ops import ops
 
     torch.manual_seed(0)
     weight = torch.randn(768, device="cuda", dtype=torch.float16)
@@ -22,7 +22,7 @@ def test_add_layernorm_is_bit_identical():
 def test_encoder_matches_disentangled_flash(length, padded):
     from gliner2 import AutoExtractor
 
-    from gliner_kernel_t4 import attention
+    from glinert4 import attention
 
     model = AutoExtractor.from_pretrained("fastino/gliner2-multi-v1", map_location="cuda", quantize=True,
                                           attention_backend="disentangled_flash").eval()

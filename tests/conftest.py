@@ -9,8 +9,8 @@ import pytest
 
 @pytest.fixture(autouse=True)
 def stock_gliner2():
-    import gliner_kernel_t4
+    import glinert4
 
-    gliner_kernel_t4.uninstall()
+    glinert4.uninstall()
     yield
-    gliner_kernel_t4.uninstall()
+    glinert4.uninstall()

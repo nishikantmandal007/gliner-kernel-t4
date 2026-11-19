@@ -3,7 +3,7 @@ import copy
 import pytest
 import torch
 
-from gliner_kernel_t4 import Detector, DetectorConfig, MemoryConfig, count, pipeline, runtime
+from glinert4 import Detector, DetectorConfig, MemoryConfig, count, pipeline, runtime
 from standin import build, corpus
 
 ENTITY_SETS = [{"Organization": "company"}, {"Person": "people", "Street": "street", "City": "town"}]

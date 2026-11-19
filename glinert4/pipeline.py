@@ -11,9 +11,9 @@ LONG_BATCH_SIZE = 8
 def gpu_streams(model, device):
     if device.type != "cuda":
         return None, None
-    streams = model.__dict__.get("gliner_kernel_t4_streams")
+    streams = model.__dict__.get("glinert4_streams")
     if streams is None or streams[0].device != device:
-        streams = model.__dict__["gliner_kernel_t4_streams"] = (torch.cuda.Stream(device), torch.cuda.Stream(device))
+        streams = model.__dict__["glinert4_streams"] = (torch.cuda.Stream(device), torch.cuda.Stream(device))
     return streams
 
 
