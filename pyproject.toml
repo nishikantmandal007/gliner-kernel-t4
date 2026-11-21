@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "glinert4"
-version = "1.0.1"
+version = "1.0.2"
 description = "GLiNER2 entity detection on an NVIDIA T4: fused DeBERTa attention, an exact count head and a pipelined detector."
 readme = "README.md"
 requires-python = ">=3.10"
