@@ -5,6 +5,7 @@ on:
     branches: [main]
     tags: ["v*"]
   pull_request:
+  workflow_dispatch:  # build the wheel from any branch: Actions -> release -> Run workflow
 
 permissions:
   contents: read
@@ -20,7 +21,7 @@ jobs:
 
   wheel:
     needs: test
-    if: startsWith(github.ref, 'refs/tags/v')
+    if: startsWith(github.ref, 'refs/tags/v') || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-24.04
     permissions:
       contents: write
@@ -28,14 +29,22 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - run: sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache/CodeQL
       - run: |
-          docker run --rm -v "$PWD:/src" -w /src -e TORCH_CUDA_ARCH_LIST=7.5 -e PYTHONPATH=/src nvidia/cuda:12.6.3-devel-ubuntu22.04 bash -ec "
+          docker run --rm -v "$PWD:/src" -w /src -e TORCH_CUDA_ARCH_LIST='7.5;8.0;8.6;8.9+PTX' -e PYTHONPATH=/src nvidia/cuda:12.6.3-devel-ubuntu22.04 bash -ec "
             apt-get update && apt-get install -y --no-install-recommends python3.10-dev python3-pip
             pip install --no-cache-dir torch==2.14.1+cu126 --index-url https://download.pytorch.org/whl/cu126
             pip install --no-cache-dir ninja==1.13.2 pyahocorasick==2.3.1 setuptools==84.2.1 wheel==0.48.0
             python3 scripts/build_kernels.py
             ldd glinert4/_glinert4.so | grep libcudart.so.12
+            # RunPod serverless has no T4: refuse a wheel without the L4/4090 (sm_89) and A4000/A5000 (sm_86) kernels
+            for arch in sm_75 sm_80 sm_86 sm_89; do cuobjdump --list-elf glinert4/_glinert4.so | grep -q \$arch || { echo missing \$arch; exit 1; }; done
+            cuobjdump --list-ptx glinert4/_glinert4.so | grep -q compute_89 || { echo missing compute_89 PTX; exit 1; }
             pip wheel --no-deps --no-build-isolation -w dist .
           "
-      - uses: softprops/action-gh-release@efb35369e0ad2afab669f228072c1b0d510eae64 # v3.0.3
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: glinert4-wheel
+          path: dist/*.whl
+      - if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@efb35369e0ad2afab669f228072c1b0d510eae64 # v3.0.3
         with:
           files: dist/*.whl
