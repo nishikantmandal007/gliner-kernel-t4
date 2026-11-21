@@ -37,7 +37,8 @@ jobs:
             ldd glinert4/_glinert4.so | grep libcudart.so.12
             # RunPod serverless has no T4: refuse a wheel without the L4/4090 (sm_89) and A4000/A5000 (sm_86) kernels
             for arch in sm_75 sm_80 sm_86 sm_89; do cuobjdump --list-elf glinert4/_glinert4.so | grep -q \$arch || { echo missing \$arch; exit 1; }; done
-            cuobjdump --list-ptx glinert4/_glinert4.so | grep -q compute_89 || { echo missing compute_89 PTX; exit 1; }
+            cuobjdump --list-ptx glinert4/_glinert4.so
+            cuobjdump --list-ptx glinert4/_glinert4.so | grep -q 'sm_89.ptx' || { echo missing sm_89 PTX; exit 1; }
             pip wheel --no-deps --no-build-isolation -w dist .
           "
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
