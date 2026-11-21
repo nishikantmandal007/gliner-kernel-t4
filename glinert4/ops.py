@@ -6,7 +6,10 @@ from torch.utils.cpp_extension import load
 
 PACKAGE_DIR = Path(__file__).resolve().parent
 SOURCES = [str(PACKAGE_DIR / "csrc" / name) for name in ("ops.cpp", "attention.cu", "add_layernorm.cu")]
-CUDA_FLAGS = ["-O3", "-gencode=arch=compute_75,code=sm_75", "--use_fast_math"]
+# T4 (75), A100 (80), A4000/A5000/3090/A40 (86), L4/4090/L40S (89) + PTX so newer GPUs JIT-compile it.
+ARCHS = ("75", "80", "86", "89")
+CUDA_FLAGS = ["-O3", "--use_fast_math", *[f"-gencode=arch=compute_{a},code=sm_{a}" for a in ARCHS],
+              f"-gencode=arch=compute_{ARCHS[-1]},code=compute_{ARCHS[-1]}"]
 PREBUILT = PACKAGE_DIR / "_glinert4.so"
 
 

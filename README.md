@@ -6,7 +6,7 @@ with the same output. Whole documents go in, distinct values and every occurrenc
 
 ## Install
 
-Requires Python 3.10+, an NVIDIA T4 (sm_75) and [uv](https://docs.astral.sh/uv/) for development.
+Requires Python 3.10+, an NVIDIA GPU with sm_75 or newer (built for T4, A100, A4000/A5000/3090, L4/4090; PTX for newer) and [uv](https://docs.astral.sh/uv/) for development.
 
 ```bash
 uv sync
